@@ -1,6 +1,6 @@
 # COMMANDS 
 
---SUDO--
+# SUDO
 
 * su - : su, "switch user" kıslatması olarak gelir. su'dan sonra gelen - ile hedef kullanıcının oturum açma ortamını da yüklemesi emredilir.
 * su kullanici_adi formatiında kullnaılıyor olsaydı bu bahsi geçen kullnaıcının oturum açmasına izin veiridi ama bir önceki kullanıcının oturum açma ortmaın saklardı
@@ -26,9 +26,15 @@ grup içerisine kullanıcı eklemek için;
     - getent: "get entries" kısaltımı olarak kullanılır. genel format şudur: getent <veritabanı_adı> [anahtar_değer], sudo adı verilen bir grubun girdilerini aldığımız anlamına gelir.
 
 sudo grubuna eklediğimiz kullanıcıya sudo yetkileri vermek için "sudo visudo" komutunu giriyoruz. bizim sudoers diye bir dosyamız var. bu dosya sudo'nun nasıl davranacağını belirleyen 
-kuralları içerir. visudo ile bu dosya içerisine girip "asay ALL=(ALL:ALL) ALL" komutunu ekliyoruz. asay kullanıcısına tüm yetkiler verilmiş oluyor. sonrasında kaydedip çıkıyoruz. visudo'nun 
-özelliği, kaydedip kapatırken sudoers dosyasına özgü syntax kontrolü veya herhangi hatalı bir giriş olup olmadığını kontrol eder. sudo çok geniş yetkiye sahip olduğu için herhangi bir hata
-programın çalışmasını engelleyebilir. Kısaca amacı güvenlik.
+kuralları içerir. visudo ile bu dosya içerisine girip "asay ALL=(ALL:ALL) ALL" komutunu ekliyoruz. asay kullanıcısına tüm yetkiler verilmiş oluyor. sonrasında kaydedip çıkıyoruz. visudo'nun özelliği, kaydedip kapatırken sudoers dosyasına özgü syntax kontrolü veya herhangi hatalı bir giriş olup olmadığını kontrol eder. sudo çok geniş yetkiye sahip olduğu için herhangi bir hata programın çalışmasını engelleyebilir. Kısaca amacı güvenlik.
+
+   _peki bu ALL=(ALL:ALL) ALL tam olarak kime neyin "ALL" iznini veriyor?_
+
+_genel format şu şekildedir: kullanıcı_veya_grup host=(çalıştırılacak_kullanıcı:çalıştırılacak_grup) komutlar_
+
+_* ilk 'ALL': belirtilen kullanıcının hangi host'larda bu yetkilere sahip olacağını belirtir._
+_* ikinci ve üçüncü, parantez içi 'ALL' ifadeleri : (çalıştırılacakkullanici:calistirilacakgrup) formatında kullanılır. ilk ALL ifadesi komutun hangi kullanıcı adına, parantez içerisindeki 2.ALL ifadesi komutun hangi grup adına çalıştırılacağını belirtir._
+_* son ALL ifadesi: belirtilen kullanıcının hangi komutları çalıştırabileceğini belirtir. örneğin sadece apt update komutu kullanmasına izin vermek için /usr/bin/apt update ile değiştirilebilir._
 
 * kuralları yeniledikten sonra "reboot" komutu giriyoruz.
 * sudo -v: komutun açılımı sudo "validate". Bir kullanıcı sudo komutunu ilk kullandığında, sistem kullanıcıdan parolasını girmesini ister. Doğru parola girildikten sonra, sudo yetkisi
@@ -37,23 +43,21 @@ varsayılan olarak 5 dakika boyunca geçerli olur. Bu süre içinde tekrar sudo 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
---SSH YÜKLEME--
+# SSH Yükleme
 * sudo login asay: bu komut sayesinde root'tan kendi hesabımıza geçiş yapmış oluyoruz.
 * sudo apt install openssh-server -y:
-    - sudo: sistem genelinde bir kurulumo olduğu için yönetici yetkisi gerekir.
-    - apt install openssh-server: apt paet yöneticisine openssh-server kurulmasını söyler. openssh-server, başka bir bilgisayardan sanal makineye bağlanmamızı sağlayan ssh sunucu yazılımıdır.
+    - sudo: sistem genelinde bir kurulumu olduğu için yönetici yetkisi gerekir.
+    - apt install openssh-server: apt paket yöneticisine openssh-server kurulmasını söyler. openssh-server, başka bir bilgisayardan sanal makineye bağlanmamızı sağlayan ssh sunucu yazılımıdır.
         - SSH Sunucusu Nedir?
-      SSH (Secure Shell), başka bilgisayardan sanal makineye ağ üzerinden güvenli bir şekilde bağlanma için kullanılan bir protokoldür(bir dizi kurallar bütünü). Bağlantının sağlanabilmesi
-    için de bilgisayarda openssh-server gibi bir yazılımın olması gerekir.
+      SSH (Secure Shell), başka bilgisayardan sanal makineye ağ üzerinden güvenli bir şekilde bağlanma için kullanılan bir protokoldür(bir dizi kurallar bütünü). Bağlantının sağlanabilmesi sdsduiçin de bilgisayarda openssh-server gibi bir yazılımın olması gerekir.
 * sudo systemctl status ssh: ssh  çalışıyor mu çalışmıyor mu durumuna bakmak için kullanılır.
     - systemctl: "system control" kısaltması olarak gelmiştir. sistemleri yönetmek için kullnaılır. sistem başlatma, durdurma, yeniden başlatma gibi işlemler içindir.
     - usdo yetkisiyle ssh protokolünün 'status'unu kontrol eder.
-  * ssh servisi kapalı olsaydı : sudo service ssh start, yeniden başlatmak isteseydik: sudo service ssh start komutları da kullanılabilirdi.
+  * ssh servisi kapalı olsaydı açmak için: sudo service ssh start, yeniden başlatmak isteseydik: sudo service ssh start komutları da kullanılabilirdi.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
---PORT İŞLEMLERİ--
-  
+# Port İşlemleri
 subject't bizden 4242 portuna bağlanmamız isteniyor. önce bunu yapıyoruz.
 
 * sudo nano /etc/ssh/sshd_config: sshd_config dosyası, SSH sunucusunun ana yapılandırma dosyasıdır, ssh sunucusunun davrsnışlarını kontrol eden kuralları içerir. Burada bulunan Port 22,
@@ -63,10 +67,9 @@ ssh portudur. SSH'ın kendisi, Port 22 yani.
 * değişiklikleri kaydetmek için sudo service ssh restart dedikten sonra sudo service ssh status diyerek ssh durumunu kontrol ediyoruz. Status çıktısında 4242 portunun dinlneiyor olduğu
 yazmalı. Eğer istenen çıktı alınamıyorsa _"sudo reboot"_ ile tekrar başlatıp tekrar denenebilir.
 * sudo grep Port /etc/ssh/sshd_config: Bu komut ile dosya içinde port eşleşmesi bulunup ekrana yazdırılacağı için bağlanmada sıkıntı çıkmadıysa Port 4242 eşleşmesi bulunur ve yazdırılır.
-* 
-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
---GÜVENLİK DUVARI, UFW İŞLEMLERİ--
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Güvenlik Duvarı, UFW İşlemleri
 * sudo apt-get install ufw -y: UFW(Uncomplicated FireWall) indirdiğimiz komut.
 * sudo ufw enable: UFW'nin aktif edilmesi için gerekli komut.
 * systemctl komutunun kullanımından bahsetmiştim. yine aynı formatla burda da kontrol yapabiliriz: sudo systemctl status ufw
@@ -75,3 +78,120 @@ Güvenlik duvarının kurallarına 4242 Port'unu eklemmemiz gerek. UFW, gelen ve
 gerekir. 
 
 Benim rehber aldığım pdf'te SSH'ın da kurallara tanıtılması gerektiği yazıyor. Ama zaten subject dosyası sadece 4242 portu kalsın dediği için portlar arasında Port 22 olmayacak. O yüzden 
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Sanal Makineyi Terminale Bağlama
+<img width="650" height="384" alt="image" src="https://github.com/user-attachments/assets/b8e45c0f-e129-4bf7-982a-b1f2e1c93d3a" />
+
+ekteki görsel üzerinden host port ve guest port ayarlayarak sanal makineyi bilgisayar terminaline bağlayacağız.
+
+* host port: ev sahibinin kullandığı porttur. Kendi bilgisyarınıza dışardan bağlanmak istediğinizde bu portu kullanırsınız. dışarıdan gelen bağlantılar bu porta bağlanır ve sonra sanal makineye yönlendirilir. Kısaca burası dışarıya açılan kapıdır.
+
+* guest port: sanal makinenin içinde çalışan uygulama ya da hizmetlerin kullandığı porttur. Dışarıdan gelen bağlantı host port'a ulaştığında host port tarafından ilgili guest port'a yönlendirilir.
+
+bir somutlaştırma yaparsak, host port'u bir apartman sitesinin girişlerini kontrol edip, ilgili apartmana yönlendiren güvenlik; guest port'u ise ilgili apartman olarak düşünebiliriz. ziyaretçi (dış bağlantı), güvenliğe (host port) gelir. güvenlik ise onu ilgili daireye (guest port) yönlendirir.
+
+terminale **ssh -p host_port_numarası kullanici_adi@127.0.0.1** komutu girilidiğinde;
+    * -p host_port_numarası: SSH bağlantısı için kullanılacak port numarasını belirtir.
+    * kullanici_adi: sanal makineye giriş yapacak kullanıcı adıdır.
+    * @127.0.0.1: bağlanılmak istenilen IP adresi. localhosy olarak da bilinen fiziksel bilgisayarın kendisine ait IP adresidir. Biz de o bilgisyardaymış gibi eriştiğimiz için bu IP'yi kullanıyoruz. 127.0.0.1 (kendilerine localhost da deniyormuş), her bilgisayarda bulunan default bir IP adresidir. bilgisyarın ev adresi gibi bişi.
+    
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Kullanıcı Adı Değiştirme
+* sudo hostnamectl set-hostname yeni_host_adi: yeni host name ayarlamak için kullanılır. "hostname" konmutu sistemin hostname'ini ayarlmak için kullanılan bir araçtır.
+ilk ayarlandıktan sonra sudo hostname komutu ile hostname'i kontrol etmek istediğimizde sudo kurallarını bu host için ayarlamadığımızdan bir uyarı verecek. bunu düzeltmek için;
+- sudo nano /etc/hosts komutunu girdikten sonra açılan dosyada eski kullanıcı ismimizi yenisiyle değiştiriyoruz. bu değişiklik bilgisyar yerel IP'sindeki hostname ile bizim ayarladığımız hostname'in eşleşmesini sağşlamak içindir.
+- bu dosyada yeni kullanıcı adının karşısında 127.0.1.1 gibi bir IP adresi var. Bu kullanıcımıza atanmış, bilgisyara ait statik bir IP adresi.
+- ekte etc/hosts dosyasının içeriği bulunuyor:
+  <img width="466" height="167" alt="image" src="https://github.com/user-attachments/assets/45ad7fb1-170d-4075-b157-9e6898743ca3" />
+- IP adreslerini hostnamee ile eşleştirdiğimiz kısmın altında IPv6 hakkında bazı bilgiler var, evoda karşılaşılırsa diye çok ufak araştırdım. IPv6, en güncel internet protokülüdür. Daha geniş adres alanına ve geliştirilmiş bazı özelliklere sahiptir.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Sudo Yapılandırma
+* sudo visudo komutuyla sudoers dosyasına giriş yapıyoruz.
+* dosyaya aşağıdaki komutları ekliyoruz:
+    - Defaults    log_input,log_output: kullanıcının sudo ile çalıştırdığı komutların girdi ve çıktılarını kaydetmesini sağlar.
+    - Defaults    logfile=”/var/log/sudo/sudo.log”: ilgili tüm logların hangi yola kaydedileceğini belirtir.
+    - Defaults    requiretty: TTY modunu aktif etmek için. Sudo komutunun sadece geçek bir terminal üzerinden bağlanması içindir. Aksi takdirde kötü niyetli bir yazılım terminal bağlantısı olmadan sudo dosyasına giriş yapabilir. bu tarz bir durumu engelliyoruz. 
+          * TTY Modu Nedir: "Teletypewriter"dan gelir. Kullanıcının girdisi karşılığında bir çıktı veren oturumdur. Kısaca terminal ya da konsol arayüzü.
+       
+    - Defaults    secure_path=” /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin”: bu satırı ekleyerek sudoya girilecek komutların hangi yollarda bulunduğunu belirtiyoruz. bu da aslında güvenlik amaçlı bir aşama. dışarıdan kötü niyetli bir komut gönderildiğinde bu komut bu yolda olmadığı için terminal bu komutu çalıştırmayacak.
+          * belirtilen path'ler sudonun çalışması için Linux default dizinleridir. örneğin /sbin, "system binary" kısaltımıdır ve sadece root'un                         kullanabileceği, sistem açma, kapama gibi komutları tutar. /usr/bin, kullanıcının günlük hayatında kullandığı standart program,  dosya vs. içerir.
+      
+    - Defaults    passwd_tries=3: sudo şifresinin doğru girilmesi için 3 deneme hakkı verir.
+    - Defaults    badpass_message=”<belirttiğiniz hata mesajı>”: yanlış sudo şifresi girilidiğinde yayınlanacak hata mesajı.
+ 
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Şifre Politikası Ayarlama
+* sudo nano /etc/login.defs komutunu çalıştırıyoruz. /etc/login.defs dosyasına giriş yapıyoruz. Bu dosya Linux'ta kullanıcılar ve  şifre poltiikaları için varsayılan ayarları tutan bir dosyadır.
+* dosyaya subject'in söylediği şifre politikasına ait kuralları ekliyoruz :
+PASS_MAX_DAYS   30: kullanıcı parolasının max. 30 gün boyunca geçerli kalacağını söyler. 30 gün sonunda şifre değiştirme gerekir.
+PASS_MIN_DAYS   2: kullanıcı şifresini değiştirdikten sonra tekrar değiştirmedn en az 2 gün kullanmalıdır. 
+PASS_WARN_AGE   7: parolasının süresi dolmasına 7 gün kala kullanıcıya bir uyarı mesajı göndermek içindir. Bu sayede kullanıcı 7 gün sonra şifre değişikliğine gitmesi gerektiğini bilir.
+
+* değişiklikleri kaydettikten sonra **sudo chage -l kullanici_adi** komutu ile kontrol edilebilir.
+      - sudo chage -l kullanici_adi: belirtilen kullanıcının parola yaşı, son parola değiştirme tarihi gibi bilgileri listeler.
+      - chage: "change" ve "age" kavramlarından gelir. parola politikalarını uygulayarak listelenmesini sağlar.
+Aynı işlemleri root kullanıcısı için de tekrar ediyoruz. Subject bizden root kullanıcısının da şifre politikalarına tabii olması gerektiğini söylemiş.
+
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------
+ # etc/pam.d/common-password Dosya Değişiklikleri
+
+ * sudo apt install libpam-pwquality -y: libpam-pwqualty adlı yazılım paketini yüklüyoruz.
+       - PAM sistemi oturum açma, parola değiştirme gibi işlemleri yöneten bir sistemdir.
+       - pwquality ise "password quality"de gelir.
+       - kısaca libpam-quality, parla uzunluğu, karakter çeşitliliği, kullanıcı adı ile şifre benzerliği, ardışık karakterler gibi durumları handle'lar.
+       - koyduğu kurallara /etc/securit/pwquality.conf path'i ile ulaşabilirsiniz.
+* paketi kurduktan sonra /etc/pam.d/common-password dosyasında bazı değişiklikler yapmamız gerek;
+  
+    ucredit=-1 : En az 1 adet büyük karakter olması için, -1 değeri almasının sebebi pam_pwquality sisteminden kaynaklanır.
+
+pam_pwquality sisteminde -1, zorunluluk belirtir. 1 olması, sistemde "puan" mantığındadır. örneğin burayı 1 yapsaydık şifredeki her bir büyük karakter için sistemin 1 credit eklenirdi. PAM sisteminde bu mantıkla şifre için credit'ler kullanılarak şifreye not verilir, ve iyi bir şifre olup olmadığına karar verilir. Örneğin parolada 3 rakam bulunuyorsa şifre bunun için 3 puan kazanır, ancak en az bir tane sayı yoksa -1 puan yer. (dcredit=-1 verilmiş çünkü) aşağıdaki credit atamaları da bu mantıkla çaılışır. 
+
+- lcredit=-1 : En az 1 adet küçük karakter olması için
+- dcredit=-1 : En az 1 adet sayı olması için
+- maxrepeat=3 : En fazla 3 adet karakterin ardışık olması için
+- usercheck=1 : Şifre kullanıcı adını içeriyorsa şifrenin geçersiz olması için
+- difok=7 : Yeni oluşturulacak şifrenin, eski şifrenin içermediği en az 7 karakteri içermesi için
+- enforce_for_root : Tüm bu değişikliklerin “root” kullanıcısına da uygulamak için
+- minlen=10 : Şifrenin en az 10 karakter uzunluğunda olması için
+
+- obscure : Parola kontrol aracıdır. Parolanın basit olup olmadığını kontrol eder. Zaten libpam-pswquality bu işi fazlasıyla yaptığı için çok fazla tercih edilmeyebilir. 
+- sha512 : SHA-512 algoritması, şifreyi veritabanına kaydetmeden önce güçlü bir şifreleme için kullanılan hash'ler. Çoğunlukla sistemlerde saklanan şifrelerimizi 3. kişilerden korumak için kullanılır. SHA-512 algoritması şifreyi alıp farklı karakter ve sembollerle hash'ler (şifreler). Bir veriden hash değeri üretmek kolayken, bu değişmiş hash değerinden orijinal şifreyi bulmak imkansızdır. bu özellikler SHA-512'yi güvenilen bir hash algoritması yapar.
+ <img width="600" height="284" alt="image" src="https://github.com/user-attachments/assets/9236a4ea-4fe1-4016-9a49-aa69c197bd29" />
+
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------
+ # Yeni Kullanıcı 
+* sudo adduser yeni_kullanici_adi : yeni kullanıcı oluşturmak için komut
+      -> Bu yeni kullanıcı için istenen şifreyi biraz önce koyduğumuz şife politikalarına uygun ayarlamamız gerekiyor.
+* sudo getent passwd <username>: ilgili kullanıcı adı hakkında sistemdeki passwd veritabanından bilgi alan bir komut.
+      -> örnek bir çıktıyı ekte bulabilirsiniz:
+<img width="707" height="268" alt="image" src="https://github.com/user-attachments/assets/99a556ce-1e74-42cc-a977-bde54442f7b3" />
+- bu çıktıda en baştaki x, yetersiz yetki sebebiyle görüntülenmeyen kullanıcı şifresidir.
+- 1000 sayısı kullanıcı kimliğidir. Sistemin kullanıcıyı tanımak için kullandığı benzersiz bir numaradır. 1000 genellikle sistemdeki ilk normal kullanıcının aldığı kimlik numarasıdır.
+- diğer 1000 ise kullanıcının birincil olarak ait olduğu grubun kimlik numarasıdır. Çoğu zaman kullanıcı adı ve grup adları aynıdır ve aynı ID'yi paylaşırlar.
+- /home/aleyna kısmı, aleyna kullanıcısının ana dizinidir.
+- /bin/bash kısmı ise kullanıcının oturum açtığında çalışacak olan komut satırıdır.
+
+* id <user> : bu komut ilgili kullaıcının kullanıcı ve grup üyelikleri bilgisini görüntülemek içindir. kullanıcı hangi gruplar üye vs. buradan görüyoruz. eğer user değişkeni olmadan çalıştırırsak o an oturumu açık olan kullaıcı için bilgiler getirilir.
+* içinde bulunduğumuz kullanıcı hesabının hangi gruplarda olduğunu görmek için: **groups** komutu kullanılır. groups <user> ile de ilgili kullanıcı için gruplar bulunur.
+* sudo deluser <user> : Linux sisteminden bir kullanıcının hesabını silmek içindir.
+* sudo deluser –remove-home <user> : gibi bir komutla silseydik kullanıcıyı, dosyalarının da olduğu ana diziniyle birlikte silerdi.
+* sudo deluser --remove-all-files <user> : bu komut ise kullanıcıya ait ne varsa her şeyi siler.
+* compgen -u : sistemdeki tüm kullanıcıların bir listesini verir.
+      -> compgen : "completion generator”den gelir. Bash kabuğunda komut ve isim tamamlama (completion) için kullanılabilecek bir araçtır.
+      -> -u : -u komutu ile 'compgen'in listeleyeceği şeyn 'user'lar olduğunu belirtiyoruz.
+* sudo passwd : bu komut ile root hesabımızın şifresini değiştirebiliriz. sudo passwd <user> formatı ile de ilgili kullanıcının şifresi değiştirilebilir. sadece 'passwd' komutu ile de içinde bulunduğumuz kullanıcı şifresi değiştirilir.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+  # Yeni Grup
+  * sudo addgroup <groupname> : grup eklemek için.
+  * sudo adduser <user> <groupname : ilgili kullancııyı ilgili gruba eklemek için.
+  * groups <user> : bu komut ile de ilgili kullanıcının içinde bulunduğu gruplar listelenir.
+  * sudo delgroup <groupname> : Bir grubu silmek için
+  * sudo deluser <user> <groupname> : ilgili kullanıcıyı ilgili gruptan siler.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+# monitoring.sh Dosyası Oluşturma
