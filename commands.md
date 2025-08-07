@@ -194,4 +194,62 @@ pam_pwquality sisteminde -1, zorunluluk belirtir. 1 olması, sistemde "puan" man
   * sudo deluser <user> <groupname> : ilgili kullanıcıyı ilgili gruptan siler.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
-# monitoring.sh Dosyası Oluşturma
+# monitoring.sh Dosyası
+* monitoring.sh, bir Linux sisteminin veya çalışan servislerinin durumunu izlemek için oluşturulmuş bir shell scriptidir. CPU, RAM ve disk kullanımlarını kontrol eder. Hata durumlarını kontol etmek için dosya ve uygulama loglarını tarar. 
+* subject dosyasında her 10 dakikada bir monitoring.sh içeriğini yazdırmamız isteniyor. Bunun zaman ayarını yapabilmek için **"crontab"** dosyası ayarlamamız gerekiyor.
+* **"Netstat"** komutu, bilgisayarın ağ bağlantılarını ve hangi portların dinlendiğini gösterir. Örneğin, web veya SSH servislerinin çalışıp çalışmadığını bu komutla görebilirsiniz. Biraz eski bir araç olmasından dolayı daha yeni ve daha geniş kapsamlı araçlar da tercih edilebilir. Ancak tüm Linux'lara uyum sağlayabilecek uluslararası eski bir araç. Ayrıca sözdizimi (syntax'ı) genel olarak daha basittir.
+* oluşturduğumuz monitoring.sh dosyasına komutlar eklendiğinde son hali şöyle olmalı:
+<img width="1000" height="675" alt="image" src="https://github.com/user-attachments/assets/a75a29f1-61c2-42e4-b9b1-6b09c95e8979" />
+
+    - arc=$(uname -a): Sistem mimarisi hakkında tüm bilgiyi (uname -a) alır. İşletim sistemi çekirdeği, hostname, donanım ile ilgili bilgileri içerir.
+    - pcpu=$(grep "physical id" /proc/cpuinfo | sort | uniq | wc -l): Sistemdeki fiziksel CPU (işlemci) sayısını bulur.
+              ->  /proc/cpuinfo, Linux'un kernel hakkında tüm bilgileri tuttuğu dosya. bu dosya içerisinde "physical id" metnini arıyoruz. "sort", grep                     çıktısını alfabetik olarak sıralar. "uniq" ile tekrar eden satırlardan sadece 1 tane bırakılır. "wc" ise _word count_'tan gelir ve -l ile                     listelenen satırları sayar.
+    -  vcpu=$(grep "^processor" /proc/cpuinfo | wc -l): Mantıksal işlemci (vCPU) sayısını bulmak için tasarlanmıştır.
+              -> "^processor" ifadesindeki '^', gerp'in arama yapacağı kelimenin sadece cümle başında olduğu durumları bulması gerektiğini ifade eder. Kalan                ifadelerde de farklı bir şey yok.
+    - fram=$(free -m | awk '$1 == "Mem:" {print $2}'): Bu komut, sistemdeki toplam fiziksel belleği (RAM) megabayt cinsinden bulur, fram(fullram)'e atar.
+              -> free -m komutu sistemin bellek alanını gösteren komuttur. -m paramtersi çıktıyı **megabyte** cinsine ayarlar.
+              -> awk '$1 == "Mem:" {print $2}' kısmında, **awk** görüntü işleme görevinde bir komuttur. awk komutunu kullanarak her satırdaki ilk alanın                     ($1 kısmı bunu sağlıyor), "Mem"e eşit olup olmadığını kontrol eder. Koşul sağlanırsa satırdaki ikinci alanı yazdırmasını söyler. 
+    - uram=$(free -m | awk '$1 == "Mem:" {print $3}'): Bu komut, sistemde kullanılan fiziksel belleği (RAM) megabayt cinsinden bulup uram(usedram)                 değişkenine atar.
+    - pram=$(free | awk '$1 == "Mem:" {printf("%.2f"), $3/$2*100}'): Bu komut, sistemdeki bellek (RAM) kullanım yüzdesini hesaplar ve sonucu iki ondalık           basamaklı bir sayı olarak biçimlendirir.
+    - fdisk=$(df -Bg | grep '^/dev/' | grep -v '/boot$' | awk '{ft += $2} END {print ft}'): Ana disk bölümlerinin toplam boyutunu gigabayt cinsinden bulur.
+    - udisk=$(df -Bm | grep '^/dev/' | grep -v '/boot$' | awk '{ut += $3} END {print ut}'): Ana disk bölümlerinde kullanılan toplam alanı megabayt cinsinden       bulur.
+    - pdisk=$(df -Bm | grep '^/dev/' | grep -v '/boot$' | awk '{ut += $3} {ft+= $2} END {printf("%d"), ut/ft*100}'): Ana disk bölümlerinin kullanım yüzdesini hesaplar ve tam sayı olarak gösterir.
+              -> Yukarıdaki 3 komutta da -B komutu kullanılmış. Bu komut çıktıyı Megabyte ya da Gigabyte olarak ayarlar. Başka kullanımlardan biri de df,                   disk free. Disk kullanımını gösterir. grep '^/dev/' kısmı ise dev ile başlayanları yani disk bölümlerine ait olanları listeler.
+              -> -v parametesi grep'in ters davranışını sergiler. satır sonuna 'boot' olanları hariç tutar. Bu, genellikle küçük boyutta olan boot bölümünün                toplam disk kullanım değerlerini etkilemesin diye yapılır. Peki neden etkilemesin istiyoruz? Bunun sebebi boot'un kullanım amacının farklı                    olması. boot dosyası kullanıcı verilerini değil, sistem dosyalarını saklar. Bu yüzden çıkartıyoruz.
+      - lb=$(who -b | awk '$1 == "system" {print $3 " " $4}'): sistemin en son ne zaman başlatıldığını bulmak içindir.
+              -> who -b: sisteme kimlerin bağlı olduğunu 'who' komutu söyler. -b(boot time) eklentisi, who'ya sistemin başlama zamanını göstermesini söyler.
+              -> $1 == "system": Her satırın ilk alanı "system" mi diye kontrol eder.
+              -> {print $3 " " $4}: Eğer öyleyse, o satırdaki 3. ve 4. alanı (genellikle tarih ve saat) boşlukla birlikte ekrana yazdırır.
+      -  lvmt=$(lsblk | grep "lvm" | wc -l) ve lvmu=$(if [ $lvmt -eq 0 ]; then echo no; else echo yes; fi): Bu iki komut, sistemde Mantıksal Birim Yönetimi                 (LVM) kullanılıp kullanılmadığını kontrol etmek için birlikte çalışır. Birinci komut LVM birimlerinin sayısını bulur, ikinci komut ise bu                     sayıya göre yes veya no çıktısı üretir.
+      -  ctcp=$(cat /proc/net/sockstat{,6} | awk '$1 == "TCP:" {print $3}'): toplam soket sayısını bulur. /proc/net/sockstat ve /proc/net/sockstat6 dosyalarını okur, "TCP:" satırını bulur ve 3. alanı (genellikle "inuse") alır.
+      -  ulog=$(users | wc -w): sisteme şu anda giriş yapmış kullanıcı sayısını verir. -w kelime sayılacağı anlamına gelir.
+      -  ip=$(hostname -I): bilgisayarın IP adresini alır. -I, makinenin IP adreslerini döndürür.
+      -  mac=$(ip link show | awk '$1 == "link/ether" {print $2}'): bilgisayarın MAC adresini alır. 
+      -  cmds=$(journalctl _COMM=sudo | grep COMMAND | wc -l): sudo komutuyla çalıştırılan komut sayısını verir.
+
+Bu komutlardan sonra wall komutu bulunuyor. Wall komutu "write all" anlamına gelir. Sistmede o an oturum açmış tüm kullanıcılara termianl ekranlarına mesaj gönderir. Wall komutuna bağlı kurallarla da sistem durumu kullanıcı tarafından görülebilir. Yukarıdaki komutların çktıları burada mesajlara atanıyor. 
+Wall komutu hakkında bazı önemli noktalar:
+- wall mesajı, sisteme giriş yapan tüm kullanıcılara gider. Ama bazı kullanıcılar belli bir komutla terminal mesajlarını kapatabilir. Bu kullanıcılara mesaj gitmez.
+- Wall komutu girdi olarak metin alır. Aldığı metni direkt olarak yazdırır.
+
+monitoring.sh dosyasını oluşturduktan sonra **"sudo bash /usr/local/bin/monitoring.sh"*** ile çalıştırabilirsiniz. 
+
+- Monitoring.sh çıktısının zaman ayarını yapmamız gerkeiyor. bunu da **"sudo crontab -e"** komutu ile yapıyoruz.
+      * crontab, zamanlanmış görevleri düzenlemek içindir.
+      * -e eklentisi "edit" anlamındadır.
+      * başa sudo ekleyerek bunu root kullanıcısı için ayarlamış oluyoruz.
+  Açılan dosyaya ***/10 * * * * bash /usr/local/bin/monitoring.sh** satırını ekliyoruz.
+  - Her 10 dakikada bir anlamına gelir. Yani dakika kısmı her 10 dakikada bir (0,10,20,30,40,50) çalıştırılır.
+  - bash ile monitoring.sh dosyasını çalıştırmak içindir.
+      -> sonuç olarak her 10 dakikada bir monitoring.sh dosyası çalıştırılarak, Wall mesajı yazdırılır.
+
+  Crontab’ın durumunu görmek, durdurmak ve başlatmak için şu komutları kullanıyoruz:
+    * sudo systemctl status cron : Durumunu gösterir
+    * sudo systemctl stop cron : Durdurur
+    * sudo systemctl start cron : Başlatır
+    * sudo systemctl restart cron : Yeniden başlatır
+
+
+
+  _**MANDATORY KISIM BİTTİ.**_
+ 
