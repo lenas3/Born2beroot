@@ -2,10 +2,10 @@
 
 # SUDO
 
-* su - : su, "switch user" kıslatması olarak gelir. su'dan sonra gelen - ile hedef kullanıcının oturum açma ortamını da yüklemesi emredilir.
-* su kullanici_adi formatiında kullnaılıyor olsaydı bu bahsi geçen kullnaıcının oturum açmasına izin veiridi ama bir önceki kullanıcının oturum açma ortmaın saklardı
-* su - kullanici_adi formatında yazsaydık yeni kullancının kendi oturum açma ortamı ile gelmsini emrediyor olurduk.
-* biz burada kullanırken herhangi bir kullanici adı belirtmediğimiz için direkt root kullanıısına geçiş yapılır. 
+* su - : su, "switch user" kısaltması olarak gelir. su'dan sonra gelen - ile hedef kullanıcının oturum açma ortamını da yüklemesi emredilir.
+* su kullanici_adi formatiında kullanılıyor olsaydı bu bahsi geçen kullanıcının oturum açmasına izin veriridi ama bir önceki kullanıcının oturum açma ortamını saklardı.
+* su - kullanici_adi formatında yazsaydık yeni kullancının kendi oturum açma ortamı ile gelmesini emrediyor olurduk.
+* biz burada kullanırken herhangi bir kullanici adı belirtmediğimiz için direkt root kullanıısına geçiş yapılıyor. 
 
 apt paket yöneticisini indirmek için;
 * apt update -y : sistemin ait olduğu paket yöneticisini günceller. paketi güncellemiyor, olan paketlerin listesini güncelliyor. 
@@ -25,8 +25,9 @@ grup içerisine kullanıcı eklemek için;
 * getent group sudo: gruba eklenip eklenmediğini kontrol etmek için kullanılıyor.
     - getent: "get entries" kısaltımı olarak kullanılır. genel format şudur: getent <veritabanı_adı> [anahtar_değer], sudo adı verilen bir grubun girdilerini aldığımız anlamına gelir.
 
-sudo grubuna eklediğimiz kullanıcıya sudo yetkileri vermek için "sudo visudo" komutunu giriyoruz. bizim sudoers diye bir dosyamız var. bu dosya sudo'nun nasıl davranacağını belirleyen 
-kuralları içerir. visudo ile bu dosya içerisine girip "asay ALL=(ALL:ALL) ALL" komutunu ekliyoruz. asay kullanıcısına tüm yetkiler verilmiş oluyor. sonrasında kaydedip çıkıyoruz. visudo'nun özelliği, kaydedip kapatırken sudoers dosyasına özgü syntax kontrolü veya herhangi hatalı bir giriş olup olmadığını kontrol eder. sudo çok geniş yetkiye sahip olduğu için herhangi bir hata programın çalışmasını engelleyebilir. Kısaca amacı güvenlik.
+sudo grubuna eklediğimiz kullanıcıya sudo yetkileri vermek için "sudo visudo" komutunu giriyoruz. bizim sudoers diye bir dosyamız var. bu dosya sudo'nun nasıl davranacağını belirleyen kuralları içerir. visudo ile bu dosya içerisine girip "asay ALL=(ALL:ALL) ALL" komutunu ekliyoruz. asay kullanıcısına tüm yetkiler verilmiş oluyor. sonrasında kaydedip çıkıyoruz. visudo'nun özelliği, kaydedip kapatırken sudoers dosyasına özgü syntax kontrolü veya herhangi hatalı bir giriş olup olmadığını kontrol eder. sudo çok geniş yetkiye sahip olduğu için herhangi bir hata programın çalışmasını engelleyebilir. Kısaca amacı güvenlik.
+
+- izinleri eklediğimiz dosya /etc/sudoers dosyası. istenilirse bu dosyaya nano /etc/sudoers ile de değişiklik yapılabilir. Ama güvenlik amaçlı visudo daha iyi.
 
    _peki bu ALL=(ALL:ALL) ALL tam olarak kime neyin "ALL" iznini veriyor?_
 
@@ -52,7 +53,7 @@ varsayılan olarak 5 dakika boyunca geçerli olur. Bu süre içinde tekrar sudo 
       SSH (Secure Shell), başka bilgisayardan sanal makineye ağ üzerinden güvenli bir şekilde bağlanma için kullanılan bir protokoldür(bir dizi kurallar bütünü). Bağlantının sağlanabilmesi sdsduiçin de bilgisayarda openssh-server gibi bir yazılımın olması gerekir.
 * sudo systemctl status ssh: ssh  çalışıyor mu çalışmıyor mu durumuna bakmak için kullanılır.
     - systemctl: "system control" kısaltması olarak gelmiştir. sistemleri yönetmek için kullnaılır. sistem başlatma, durdurma, yeniden başlatma gibi işlemler içindir.
-    - usdo yetkisiyle ssh protokolünün 'status'unu kontrol eder.
+    - sudo yetkisiyle ssh protokolünün 'status'unu kontrol eder.
   * ssh servisi kapalı olsaydı açmak için: sudo service ssh start, yeniden başlatmak isteseydik: sudo service ssh start komutları da kullanılabilirdi.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -77,8 +78,14 @@ yazmalı. Eğer istenen çıktı alınamıyorsa _"sudo reboot"_ ile tekrar başl
 Güvenlik duvarının kurallarına 4242 Port'unu eklemmemiz gerek. UFW, gelen ve giden ağ trafiğin kontrol eden bir güenlik duvarı olduğu için üzerinden işlem yapılacak portları buray tanımlamam 
 gerekir. 
 
-Benim rehber aldığım pdf'te SSH'ın da kurallara tanıtılması gerektiği yazıyor. Ama zaten subject dosyası sadece 4242 portu kalsın dediği için portlar arasında Port 22 olmayacak. O yüzden 
+Benim rehber aldığım pdf'te SSH'ın ufw kurallarına tanıtılması gerektiği yazıyor. Ama zaten subject dosyası sadece 4242 portu kalsın dediği için portlar arasında Port 22 olmayacak. O yüzden ben onu bu adımda kurallara eklemiyorum.
 
+* **sudo ufw allow <port_number>**: bu komut ile ilgili port'u ufw kurallarına tanıtmış oluyorum. Bu sayede bu port'tan gelen bağlantılara izin veriliyor.
+* herhangi bir port'u silmek istersem **sudo ufw delete <numara>** ile silebilirim. Burada numara olarak bahsedilen şey, baştan kaçımcı kuralın silineceği.
+
+  <img width="463" height="177" alt="image" src="https://github.com/user-attachments/assets/ea247e2b-19b1-4acf-8a9b-8eefe144f1d6" />
+  
+    örneğin bu kurallar arasında 22 portunu kaldırmak için sudo ufw delete 1 ve sudo ufw delete 3 komutlarını uygulamalıyım.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Sanal Makineyi Terminale Bağlama
@@ -93,9 +100,9 @@ ekteki görsel üzerinden host port ve guest port ayarlayarak sanal makineyi bil
 bir somutlaştırma yaparsak, host port'u bir apartman sitesinin girişlerini kontrol edip, ilgili apartmana yönlendiren güvenlik; guest port'u ise ilgili apartman olarak düşünebiliriz. ziyaretçi (dış bağlantı), güvenliğe (host port) gelir. güvenlik ise onu ilgili daireye (guest port) yönlendirir.
 
 terminale **ssh -p host_port_numarası kullanici_adi@127.0.0.1** komutu girilidiğinde;
-    * -p host_port_numarası: SSH bağlantısı için kullanılacak port numarasını belirtir.
-    * kullanici_adi: sanal makineye giriş yapacak kullanıcı adıdır.
-    * @127.0.0.1: bağlanılmak istenilen IP adresi. localhosy olarak da bilinen fiziksel bilgisayarın kendisine ait IP adresidir. Biz de o bilgisyardaymış gibi eriştiğimiz için bu IP'yi kullanıyoruz. 127.0.0.1 (kendilerine localhost da deniyormuş), her bilgisayarda bulunan default bir IP adresidir. bilgisyarın ev adresi gibi bişi.
+- -p host_port_numarası: SSH bağlantısı için kullanılacak port numarasını belirtir.
+- kullanici_adi: sanal makineye giriş yapacak kullanıcı adıdır.
+- @127.0.0.1: bağlanılmak istenilen IP adresi. localhosy olarak da bilinen fiziksel bilgisayarın kendisine ait IP adresidir. Biz de o bilgisyardaymış gibi eriştiğimiz için bu IP'yi kullanıyoruz. 127.0.0.1 (kendilerine localhost da deniyormuş), her bilgisayarda bulunan default bir IP adresidir. bilgisyarın ev adresi gibi bişi.
     
     * Terminale bağlanırken belli bir kulanıcı adı belirterek bağlanıyoruz. Peki bağlandığımız kullanıcıdan farklı bir 
     kullanıcıyla işlem yapmak istersek ne olur?
@@ -138,6 +145,11 @@ ilk ayarlandıktan sonra sudo hostname komutu ile hostname'i kontrol etmek isted
 PASS_MAX_DAYS   30: kullanıcı parolasının max. 30 gün boyunca geçerli kalacağını söyler. 30 gün sonunda şifre değiştirme gerekir.
 PASS_MIN_DAYS   2: kullanıcı şifresini değiştirdikten sonra tekrar değiştirmedn en az 2 gün kullanmalıdır. 
 PASS_WARN_AGE   7: parolasının süresi dolmasına 7 gün kala kullanıcıya bir uyarı mesajı göndermek içindir. Bu sayede kullanıcı 7 gün sonra şifre değişikliğine gitmesi gerektiğini bilir.
+Bu değişiklikleri root kullanıcısı ve kendi kullanıcımız için uygulamamız gerek. Aşağıdaki komutları yazıyoruz:
+
+- sudo chage –-mindays 2 <user>
+- sudo chage –-maxday 30 <user>
+- sudo chage –-warndays 7 <user>
 
 * değişiklikleri kaydettikten sonra **sudo chage -l kullanici_adi** komutu ile kontrol edilebilir.
       - sudo chage -l kullanici_adi: belirtilen kullanıcının parola yaşı, son parola değiştirme tarihi gibi bilgileri listeler.
