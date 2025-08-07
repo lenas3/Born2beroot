@@ -97,6 +97,14 @@ terminale **ssh -p host_port_numarası kullanici_adi@127.0.0.1** komutu girilidi
     * kullanici_adi: sanal makineye giriş yapacak kullanıcı adıdır.
     * @127.0.0.1: bağlanılmak istenilen IP adresi. localhosy olarak da bilinen fiziksel bilgisayarın kendisine ait IP adresidir. Biz de o bilgisyardaymış gibi eriştiğimiz için bu IP'yi kullanıyoruz. 127.0.0.1 (kendilerine localhost da deniyormuş), her bilgisayarda bulunan default bir IP adresidir. bilgisyarın ev adresi gibi bişi.
     
+    * Terminale bağlanırken belli bir kulanıcı adı belirterek bağlanıyoruz. Peki bağlandığımız kullanıcıdan farklı bir 
+    kullanıcıyla işlem yapmak istersek ne olur?
+        sudo ve su - komutlarını kullanarak kullanıcı değişiklikleri yapılabilir. sudo, tek bir komutu başka bir kullanıcının 
+        (genellikle root’un) yetkisiyle çalıştırmanızı sağlar ve kendi şifrenizi ister; sudo -u kullanıcı ile farklı kullanıcı 
+        adına da kullanılabilir. su ise terminal oturumunu tamamen başka bir kullanıcıya geçirir, geçiş yapılacak 
+        kullanıcının şifresi gerekir ve yeni oturumdan exit ile çıkılır.
+        
+    
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Kullanıcı Adı Değiştirme
@@ -231,6 +239,8 @@ Bu komutlardan sonra wall komutu bulunuyor. Wall komutu "write all" anlamına ge
 Wall komutu hakkında bazı önemli noktalar:
 - wall mesajı, sisteme giriş yapan tüm kullanıcılara gider. Ama bazı kullanıcılar belli bir komutla terminal mesajlarını kapatabilir. Bu kullanıcılara mesaj gitmez.
 - Wall komutu girdi olarak metin alır. Aldığı metni direkt olarak yazdırır.
+- Normal bir kullanıcı tarafından gönderilen wall mesajı, alıcı tarafından engellenebilir. Ancak oot kullanıcısının gönderdiği mesajlar ise genellikle bu engellemeyi aşar.
+- Normal kullanıcı wall komutunu kullandığında, mesajın başında kimlik bilgisi yer alır. Mesaj, kime ait olduğu belli olacak şekilde gönderilir.
 
 monitoring.sh dosyasını oluşturduktan sonra **"sudo bash /usr/local/bin/monitoring.sh"*** ile çalıştırabilirsiniz. 
 
