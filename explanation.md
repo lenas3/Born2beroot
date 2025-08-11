@@ -31,3 +31,6 @@ var-log(4GB) adında 7 bölüme ayırıyorum. Yanlarındaki depolama alanları k
 için gerekli olduğundan önce onu indiriyoruz. _(önce apt indiriyo olduğumuz için sudo'nnun apt içinde gelen bir paket olduğunu sanmıştım, yanlışmış. aklında bu şekilde şekillenen olduysa yanlış açıklamak istedim.)_
 - sudo başlı başına bir programdır ve açılımı "super user do"dur. sudo komutu kullanarak bilgsiyarda en yetkin kullanıcı adına komutu çalıştırmış oluyoruz.
 - 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+.vdi 
+Virtual Disk Image: Bİlgisyarın hash'ini alıp pushluyoruz. Her değişiklikte bu hash değeri değişiyor. O yüzden en son halini pushluyoruz. .vdi uzantılı dosyayı herhangi bir yere taşıdığımızda makineyi de taşımış oluyoruz. Makinenin image'ı.
