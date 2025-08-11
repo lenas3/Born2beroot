@@ -20,3 +20,7 @@ lsblk
 Of course, you have to make sure that you canoot use SSH with the "root" user as stated in the subject."
 
 * **Yani yeni kullanıcının hesabıyla ssh bağlantısı kurmalı --> DENE**
+
+* **monitoring.sh çalışmasını scripti değiştirmeden değiştirme**
+sudo systemctl stop cron -> cron çalışmasını durdurur.
+sudo systemctl restart cron -> yeniden başlatır.
