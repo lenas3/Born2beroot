@@ -28,5 +28,5 @@ var-log(4GB) adında 7 bölüme ayırıyorum. Yanlarındaki depolama alanları k
     * kullanıcı kendi ana dizini (/home/kullanici) üzerinde değşiklikler yapabilir. Yetki gerektiren işlemleri (burada yapacağımız sudo gibi) root şifresiyle yapabilir.
 - ilk başta sudo indirmek için apt indiriyip güncelliyoruz,  sonrasında _**apt install sudo -y**_ ile sudo programını da indiriyoruz.
 - bu kısım bende bir kafa karışıklığı oluşturduğu için açıklayayım: apt komutunun kendisi sudo'yu kurmuyor. apt bir paket yöneticisi ve root yetkisiyle apt kullanarak sudo paketini indiriyoruz. yani aslında apt komutu sudo paketini kurmamız
-için gerekli olduğundan önce onu indiriyoruz. _(önce apt indiriyo olduğumuz için sudo'nnun apt içinde gelen bir paket olduğunu sanmıştım, yanlışmış. aklında bu şekilde şekillenen olduysa yanlış açıklamak istedim.)_
+için gerekli olduğundan önce onu indiriyoruz. _(önce apt indiriyo olduğumuz için sudo'nnun apt içinde gelen bir paket olduğunu sanmıştım, yanlışmış. aklında bu şekilde şekillenen olduysa açıklamak istedim.)_
 - sudo başlı başına bir programdır ve açılımı "super user do"dur. sudo komutu kullanarak bilgsiyarda en yetkin kullanıcı adına komutu çalıştırmış oluyoruz.
