@@ -1,13 +1,13 @@
 * **siganture.txt**
 
 .vdi uzantılı dosya konumuma gidip **shasum born2beroot.vdi** komutunu çalıştırıyorum. sonrasında makinenin hash değeri oluşturulyor. Ama bunu makineyi tammaen hazır hale getiirip
-kapattıktan sonra yapmam gerek çünkü bundan sonra yapacağımız en küçük değişkilik, makineyi açmak bile bu hash değerini değiştiriyor.  
+kapattıktan sonra yapmam gerek çünkü bundan sonra yapacağımız en küçük değişkilik, makineyi açmak bile (makinenin son açılıp kapanma verisi değişiyor çünkü) bu hash değerini değiştiriyor.  
 
 * **diff komutu**
 diff dosya1 dosya2 diyerek dosya1 ve dosya2 içeriğini karşılaştırabiliriz. O anki hash ile pushlanan has değerin aynı olması gerektiği hiçbir fark olmamalı, ve herhangi bir çıktı alınmamalıdır.
 
 * **makineyi kopyalamak**
-makinenin vdi uzantılı dosyasını başka bir konuma kopyalayarak orada değişiklik yaparsak orijinal dosyanın hash değeri değişmez. o yüzden evolar arası kopyalama yapmak daha sağlıklı olur.
+makineye sağ tık yapıp full clone ile klonlarsak ve orada değişiklik yaparsak orijinal dosyanın hash değeri değişmez. o yüzden evolar arası kopyalama yapmak daha sağlıklı olur.
 
 **"Machine shouldn't have graphical environment"**
 bu ayarı ilk kez kurulum sırasında tüm yıldızları kaldırdığımız bir aşamada yaptık. orada herhangi bir pencere görünümü, simge ya da menü istemediğimizi belirtiyoruz aslında.  
